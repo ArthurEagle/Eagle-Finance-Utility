@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="M3ViewsDataSet" targetNamespace="http://tempuri.org/M3ViewsDataSet.xsd" xmlns:mstns="http://tempuri.org/M3ViewsDataSet.xsd" xmlns="http://tempuri.org/M3ViewsDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="M3ViewsConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="M3ViewsConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.Eagle_Finance_Utility.Properties.Settings.GlobalReference.Default.M3ViewsConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="FCHACC - Chart of accounts Accounting dimension 1TableAdapter" GeneratorDataComponentClassName="FCHACC___Chart_of_accounts_Accounting_dimension_1TableAdapter" Name="FCHACC - Chart of accounts Accounting dimension 1" UserDataComponentName="FCHACC - Chart of accounts Accounting dimension 1TableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="M3ViewsConnectionString (Settings)" DbObjectName="M3Views.dbo.[FCHACC - Chart of accounts Accounting dimension 1]" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT Company, [Accounting identity], [Account group], Description, Name FROM dbo.[FCHACC - Chart of accounts Accounting dimension 1]</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="Company" DataSetColumn="Company" />
+              <Mapping SourceColumn="Accounting identity" DataSetColumn="Accounting identity" />
+              <Mapping SourceColumn="Account group" DataSetColumn="Account group" />
+              <Mapping SourceColumn="Description" DataSetColumn="Description" />
+              <Mapping SourceColumn="Name" DataSetColumn="Name" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="MITMAS - Item MasterTableAdapter" GeneratorDataComponentClassName="MITMAS___Item_MasterTableAdapter" Name="MITMAS - Item Master" UserDataComponentName="MITMAS - Item MasterTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="M3ViewsConnectionString (Settings)" DbObjectName="M3Views.dbo.[MITMAS - Item Master]" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT [Item number], Name, [Business area], [Item type] FROM dbo.[MITMAS - Item Master]</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="Item number" DataSetColumn="Item number" />
+              <Mapping SourceColumn="Name" DataSetColumn="Name" />
+              <Mapping SourceColumn="Business area" DataSetColumn="Business area" />
+              <Mapping SourceColumn="Item type" DataSetColumn="Item type" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="M3ViewsDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="True" msprop:Generator_DataSetName="M3ViewsDataSet" msprop:Generator_UserDSName="M3ViewsDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="FCHACC_x0020_-_x0020_Chart_x0020_of_x0020_accounts_x0020_Accounting_x0020_dimension_x0020_1" msprop:Generator_TableClassName="_FCHACC___Chart_of_accounts_Accounting_dimension_1DataTable" msprop:Generator_TableVarName="_tableFCHACC___Chart_of_accounts_Accounting_dimension_1" msprop:Generator_TablePropName="_FCHACC___Chart_of_accounts_Accounting_dimension_1" msprop:Generator_RowDeletingName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowDeleting" msprop:Generator_RowChangingName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowChanging" msprop:Generator_RowEvHandlerName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowChangeEventHandler" msprop:Generator_RowDeletedName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowDeleted" msprop:Generator_UserTableName="FCHACC - Chart of accounts Accounting dimension 1" msprop:Generator_RowChangedName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowChanged" msprop:Generator_RowEvArgName="_FCHACC___Chart_of_accounts_Accounting_dimension_1RowChangeEvent" msprop:Generator_RowClassName="_FCHACC___Chart_of_accounts_Accounting_dimension_1Row">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Company" msprop:Generator_ColumnVarNameInTable="columnCompany" msprop:Generator_ColumnPropNameInRow="Company" msprop:Generator_ColumnPropNameInTable="CompanyColumn" msprop:Generator_UserColumnName="Company" type="xs:decimal" />
+              <xs:element name="Accounting_x0020_identity" msprop:Generator_ColumnVarNameInTable="columnAccounting_identity" msprop:Generator_ColumnPropNameInRow="Accounting_identity" msprop:Generator_ColumnPropNameInTable="Accounting_identityColumn" msprop:Generator_UserColumnName="Accounting identity">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Account_x0020_group" msprop:Generator_ColumnVarNameInTable="columnAccount_group" msprop:Generator_ColumnPropNameInRow="Account_group" msprop:Generator_ColumnPropNameInTable="Account_groupColumn" msprop:Generator_UserColumnName="Account group">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnPropNameInTable="DescriptionColumn" msprop:Generator_UserColumnName="Description">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="40" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="15" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="MITMAS_x0020_-_x0020_Item_x0020_Master" msprop:Generator_TableClassName="_MITMAS___Item_MasterDataTable" msprop:Generator_TableVarName="_tableMITMAS___Item_Master" msprop:Generator_TablePropName="_MITMAS___Item_Master" msprop:Generator_RowDeletingName="_MITMAS___Item_MasterRowDeleting" msprop:Generator_RowChangingName="_MITMAS___Item_MasterRowChanging" msprop:Generator_RowEvHandlerName="_MITMAS___Item_MasterRowChangeEventHandler" msprop:Generator_RowDeletedName="_MITMAS___Item_MasterRowDeleted" msprop:Generator_UserTableName="MITMAS - Item Master" msprop:Generator_RowChangedName="_MITMAS___Item_MasterRowChanged" msprop:Generator_RowEvArgName="_MITMAS___Item_MasterRowChangeEvent" msprop:Generator_RowClassName="_MITMAS___Item_MasterRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Item_x0020_number" msprop:Generator_ColumnVarNameInTable="columnItem_number" msprop:Generator_ColumnPropNameInRow="Item_number" msprop:Generator_ColumnPropNameInTable="Item_numberColumn" msprop:Generator_UserColumnName="Item number">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="15" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="30" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Business_x0020_area" msprop:Generator_ColumnVarNameInTable="columnBusiness_area" msprop:Generator_ColumnPropNameInRow="Business_area" msprop:Generator_ColumnPropNameInTable="Business_areaColumn" msprop:Generator_UserColumnName="Business area">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="3" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Item_x0020_type" msprop:Generator_ColumnVarNameInTable="columnItem_type" msprop:Generator_ColumnPropNameInRow="Item_type" msprop:Generator_ColumnPropNameInTable="Item_typeColumn" msprop:Generator_UserColumnName="Item type">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="3" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
