@@ -22,13 +22,24 @@ namespace Eagle_Finance_Utility
         DataTable EFF_Obsol_Alloc;
         DataTable EFF_LVL3_Sales;
         DataTable EFF_Item_Hierarchy;
+        DataTable EFF_Amortization;
+        DataTable EFF_Expense_Alloc;
+        DataTable EFF_OneTimeMap;
+        DataTable EFF_Mktg_Exp_Alloc;
 
         public DataSet EFF_CustomDS;
         public DataSet EFF_ObsoMLKDS;
         public DataSet EFF_ObsoSNKDS;
+        public DataSet EFF_AmortDS;
+        public DataSet EFF_ExpenseDS;
+        public DataSet EFF_MktgDS;
 
         public DataTable PPVTime;
         public DataTable IPVAmount;
+        public DataTable AmortBrandDT;
+        public DataTable AmortAccountDT;
+        public DataTable ExpenseLevelDT;
+        public DataTable MarketingLevelDT;
 
         List<string> Items;
         List<string> Accounts;
@@ -37,6 +48,84 @@ namespace Eagle_Finance_Utility
         public string CloseYYYYMM;
 
         public IList<int> ObsoFiscalYrsLst;
+        public IList<int> AmortFiscalYrsLst;
+        public IList<int> ExpFiscalYrsLst;
+        public IList<int> MktgFiscalYrsLst;
+        public IList<string> BrandsLst;
+        public IList<string> AmortAcctLst;
+        public IList<string> ExpLevelLst;
+        public IList<string> OneTimeFiscalYearLst;
+        public IList<string> CostCenterLst;
+        public IList<string> MktgLevelLst;
+
+        public string howToLnk = @"https://installedapplications.blob.core.windows.net/appinstall/Eagle%20Finance%20Utility/Eagle%20Finance%20Allocation%20Utility%20How-to%20Guide.docx";
+
+        private void LoadValidCostCenters()
+        {
+            CostCenterLst = new List<string>();
+            foreach(DataRow dr in EFF_CustomDS.Tables["EFF_OneTimeMap"].Rows)
+            {
+                var cc = dr["CostCenterID"].ToString();
+                if(!CostCenterLst.Contains(cc))
+                {
+                    CostCenterLst.Add(cc);
+                }
+            }
+
+        }
+        public void LoadValidOneTimeExpenseMapFiscalYears()
+        {
+            OneTimeFiscalYearLst = new List<string>();
+            for(int i = 0;i<5;i++)
+            {
+              var fy = Convert.ToInt32(CurrentFiscalYear);
+                fy += i;
+                OneTimeFiscalYearLst.Add(fy.ToString());
+
+            }
+        }     
+        private void LoadValidExpenseLevels()
+        {
+            ExpenseLevelDT = m3c.FillDataTable(sql.Select14());
+            ExpLevelLst = new List<string>();
+            foreach(DataRow dr in ExpenseLevelDT.Rows)
+            {
+                if(dr["LevelID"].ToString() != "ALLOCATION")
+                {
+                    ExpLevelLst.Add(dr["LevelID"].ToString());
+                }
+            }
+        }
+        private void LoadValidMarketingLevels()
+        {
+            MarketingLevelDT = m3c.FillDataTable(sql.Select17());
+            MktgLevelLst = new List<string>();
+            foreach (DataRow dr in MarketingLevelDT.Rows)
+            {
+                if (dr["LevelID"].ToString() != "ALLOCATION" && !MktgLevelLst.Contains(dr["LevelID"].ToString()))
+                {
+                    MktgLevelLst.Add(dr["LevelID"].ToString());
+                }
+            }
+        }
+        public void LoadValidBrands()
+        {
+            BrandsLst = new List<string>();
+            AmortBrandDT = m3c.FillDataTable(sql.Select10(CloseYYYYMM));
+            foreach(DataRow dr in AmortBrandDT.Rows)
+            {
+                BrandsLst.Add(dr["Brand"].ToString());
+            }
+        }
+        public void LoadValidAmortAccts()
+        {
+            AmortAcctLst = new List<string>();
+            AmortAccountDT = m3c.FillDataTable(sql.Select12());
+            foreach (DataRow dr in AmortAccountDT.Rows)
+            {
+                AmortAcctLst.Add(dr["GL Acct Desc"].ToString());
+            }
+        }
         public void LoadRawMaterialItemsAndAccounts()
         {
             Items = new List<string>();
@@ -96,8 +185,23 @@ namespace Eagle_Finance_Utility
             EFF_LVL3_Sales = m3c.FillDataTable(sql.Select7());
             EFF_LVL3_Sales.TableName = "EFF_LVL3_Sales";
 
-            EFF_Item_Hierarchy = m3c.FillDataTable(sql.Select8());
+            EFF_Item_Hierarchy = m3c.FillDataTable(sql.Select8(CloseYYYYMM));
             EFF_Item_Hierarchy.TableName = "EFF_Item_Hierarchy";
+
+            EFF_Amortization = m3c.FillDataTable(sql.Select11());
+            EFF_Amortization.TableName = "EFF_Amortization";
+
+
+  
+
+            EFF_Expense_Alloc = m3c.FillDataTable(sql.Select13());
+            EFF_Expense_Alloc.TableName = "EFF_Expense_Alloc";
+
+            EFF_OneTimeMap = m3c.FillDataTable(sql.Select15());
+            EFF_OneTimeMap.TableName = "EFF_OneTimeMap";
+
+            EFF_Mktg_Exp_Alloc = m3c.FillDataTable(sql.Select16());
+            EFF_Mktg_Exp_Alloc.TableName = "EFF_Mktg_Exp_Alloc";
 
             EFF_CustomDS.Tables.Add(EFF_IPV_Account);
             EFF_CustomDS.Tables.Add(EFF_IPV_Amount);
@@ -107,11 +211,62 @@ namespace Eagle_Finance_Utility
             EFF_CustomDS.Tables.Add(EFF_Obsol_Alloc);
             EFF_CustomDS.Tables.Add(EFF_LVL3_Sales);
             EFF_CustomDS.Tables.Add(EFF_Item_Hierarchy);
+            EFF_CustomDS.Tables.Add(EFF_Amortization);
+            EFF_CustomDS.Tables.Add(EFF_Expense_Alloc);
+            EFF_CustomDS.Tables.Add(EFF_OneTimeMap);
+            EFF_CustomDS.Tables.Add(EFF_Mktg_Exp_Alloc);
+
+            LoadValidBrands();
+            LoadValidAmortAccts();
+            LoadValidExpenseLevels();
+            LoadValidOneTimeExpenseMapFiscalYears();
+            LoadValidCostCenters();
+            LoadValidMarketingLevels();
 
             CreatePPVTimePeriodWorkTable();
             CreateIPVAmountWorkTable();
+            CreateObsolescenceWorkTables();
+            CreateAmortizationWorkTables();
+            CreateExpenseWorkTables();
+            CreateMarketingExpenseWorkTables();
+        }
+        public void RefreshOneTimeExpenseMapData()
+        {
+            EFF_CustomDS.Tables.Remove(EFF_OneTimeMap);
+            EFF_OneTimeMap = m3c.FillDataTable(sql.Select15());
+            EFF_OneTimeMap.TableName = "EFF_OneTimeMap";
+            EFF_CustomDS.Tables.Add(EFF_OneTimeMap);
+        }
+        public void RefreshObsolescenceAllocData()
+        {
+            EFF_CustomDS.Tables.Remove(EFF_Obsol_Alloc);
+            EFF_Obsol_Alloc = m3c.FillDataTable(sql.Select6());
+            EFF_Obsol_Alloc.TableName = "EFF_Obsol_Alloc";
+            EFF_CustomDS.Tables.Add(EFF_Obsol_Alloc);
         }
 
+        public void RefreshMarketingExpenseAllocData()
+        {
+            EFF_CustomDS.Tables.Remove(EFF_Mktg_Exp_Alloc);
+            EFF_Mktg_Exp_Alloc = m3c.FillDataTable(sql.Select16());
+            EFF_Mktg_Exp_Alloc.TableName = "EFF_Mktg_Exp_Alloc";
+            EFF_CustomDS.Tables.Add(EFF_Mktg_Exp_Alloc);
+        }
+        public void RefreshExpenseAllocData()
+        {
+            EFF_CustomDS.Tables.Remove(EFF_Expense_Alloc);
+            EFF_Expense_Alloc = m3c.FillDataTable(sql.Select13());
+            EFF_Expense_Alloc.TableName = "EFF_Expense_Alloc";
+            EFF_CustomDS.Tables.Add(EFF_Expense_Alloc);
+        }
+
+        public void RefreshAmortizartionAllocData()
+        {
+            EFF_CustomDS.Tables.Remove(EFF_Amortization);
+            EFF_Amortization = m3c.FillDataTable(sql.Select11());
+            EFF_Amortization.TableName = "EFF_Amortization";
+            EFF_CustomDS.Tables.Add(EFF_Amortization);
+        }
         private void CreateIPVAmountWorkTable()
         {
             if (IPVAmount != null)
@@ -141,6 +296,358 @@ namespace Eagle_Finance_Utility
             }
         }
 
+        private void CreateExpenseWorkTables()
+        {
+
+            EFF_ExpenseDS = new DataSet();
+
+            //Get Max Calendar Period list from EFF_Amortization
+            var periods = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Expense_Alloc"].AsEnumerable()
+                          orderby obs.Field<string>("Calendar_YYYYMM") descending
+                          select obs.Field<string>("Calendar_YYYYMM");
+
+
+
+            var maxCalPeriod = periods.Max<string>();
+
+            //Get Fiscal Year list from EFF_Amortization
+            var fiscalYears = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Expense_Alloc"].AsEnumerable()
+                              orderby obs.Field<int>("FiscalYear") descending
+                              select obs.Field<int>("FiscalYear");
+
+            ExpFiscalYrsLst = fiscalYears.Distinct().ToList();
+            var maxYr = ExpFiscalYrsLst.Max();
+
+
+            //Add a few mor years to fiscalyears
+            for (int i = 1; i < 4; i++)
+            {
+               ExpFiscalYrsLst.Add(maxYr + i);
+            }
+
+            foreach (int s in ExpFiscalYrsLst)
+            {
+                // Get Calendar Periods
+                List<string> calPeriods = new List<string>();
+                for (int i = 0; i < 6; i++)
+                {
+                    var per = (s - 1).ToString() + "0" + (4 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = (s - 1).ToString() + (10 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = s.ToString() + "0" + (1 + i).ToString();
+                    calPeriods.Add(per);
+                }
+
+                var records = EFF_CustomDS.Tables["EFF_Expense_Alloc"].Select("FiscalYear = " + s.ToString());
+
+                var expRes = CreateExpenseWorkTable(s, calPeriods, records);
+                EFF_ExpenseDS.Tables.Add(expRes);
+
+            }
+        }
+        private DataTable CreateExpenseWorkTable(int fiscalYear, List<string> calPeriods, DataRow[] expRecs)
+        {
+            DataTable expDT = new DataTable();
+            expDT.TableName = fiscalYear.ToString();
+
+            expDT.Columns.Add("Business Area", typeof(string));
+            expDT.Columns.Add("LevelID", typeof(string));     
+
+            foreach (string s in calPeriods)
+            {
+                expDT.Columns.Add(s, typeof(double));
+            }
+
+            foreach (DataRow dr in ExpenseLevelDT.Rows)
+            {
+                if(dr["LevelID"].ToString()  != "ALLOCATION")
+                {
+                    var lvl = dr["LevelID"].ToString();
+                    var ba = dr["Business Area"].ToString();
+                    expDT.Rows.Add(ba,lvl, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }              
+            }
+
+            foreach (DataRow dr in expDT.Rows)
+            {
+                var lvl = dr["LevelID"].ToString();
+                var ba = dr["Business Area"].ToString();
+                foreach (string s in calPeriods)
+                {
+                    if (expRecs.Length > 0)
+                    {
+                        DataTable expRecsDt = expRecs.CopyToDataTable();
+                        var record = expRecsDt.Select("Calendar_YYYYMM = '" + s + "' AND [Business Area] = '" + ba + "' AND [LevelID] = '" + lvl+ "'");
+
+                        if (record.Length == 1)
+                        {
+                            var pct = record[0];
+                            dr[s] = Convert.ToDouble(pct["Alloc Pct"]) * 100;
+                        }
+                    }
+
+                }
+            }
+            //Fill Totals List
+            List<decimal> totals = new List<decimal>();
+            for (int i = 2; i < 14; i++)
+            {
+                decimal total = 0;
+                foreach (DataRow dr in expDT.Rows)
+                {
+                    total += Convert.ToDecimal(dr[i]);
+                }
+                totals.Add(total);
+            }
+            //Fill Totals row
+            //Add Totals Row
+            expDT.Rows.Add("", "Total:", totals[0], totals[1], totals[2], totals[3], totals[4], totals[5], totals[6], totals[7], totals[8], totals[9], totals[10], totals[11]);
+
+            return expDT;
+        }
+
+        private void CreateMarketingExpenseWorkTables()
+        {
+
+
+
+            EFF_MktgDS = new DataSet();
+
+            //Get Max Calendar Period list from EFF_Mktg_Exp_Alloc
+            var periods = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Mktg_Exp_Alloc"].AsEnumerable()
+                          orderby obs.Field<string>("Calendar_YYYYMM") descending
+                          select obs.Field<string>("Calendar_YYYYMM");
+
+
+
+            var maxCalPeriod = periods.Max<string>();
+
+            //Get Fiscal Year list from EFF_Mktg_Exp_Alloc
+            var fiscalYears = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Mktg_Exp_Alloc"].AsEnumerable()
+                              orderby obs.Field<int>("FiscalYear") descending
+                              select obs.Field<int>("FiscalYear");
+
+            MktgFiscalYrsLst = fiscalYears.Distinct().ToList();
+            var maxYr = MktgFiscalYrsLst.Max();
+
+
+            //Add a few mor years to fiscalyears
+            for (int i = 1; i < 4; i++)
+            {
+                MktgFiscalYrsLst.Add(maxYr + i);
+            }
+
+            foreach (int s in MktgFiscalYrsLst)
+            {
+                // Get Calendar Periods
+                List<string> calPeriods = new List<string>();
+                for (int i = 0; i < 6; i++)
+                {
+                    var per = (s - 1).ToString() + "0" + (4 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = (s - 1).ToString() + (10 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = s.ToString() + "0" + (1 + i).ToString();
+                    calPeriods.Add(per);
+                }
+
+               
+
+                foreach(string lv in MktgLevelLst)
+                {                  
+                    var records = EFF_CustomDS.Tables["EFF_Mktg_Exp_Alloc"].Select("FiscalYear = " + s.ToString() + " AND [LevelID] = '" + lv+ "'");
+                    var mktgRes = CreateMarketingWorkTable(s, calPeriods, records,lv);
+                    EFF_MktgDS.Tables.Add(mktgRes);
+                }
+                
+
+            }
+        }
+        private DataTable CreateMarketingWorkTable(int fiscalYear, List<string> calPeriods, DataRow[] mktgRecs,string levelID)
+        {
+            DataTable mktgDT = new DataTable();
+            mktgDT.TableName = fiscalYear.ToString() + " " + levelID;
+
+            mktgDT.Columns.Add("Business Area", typeof(string));
+            mktgDT.Columns.Add("LevelID", typeof(string));
+            mktgDT.Columns.Add("Brand", typeof(string));
+
+
+            foreach (string s in calPeriods)
+            {
+                mktgDT.Columns.Add(s, typeof(double));
+            }
+
+            foreach (DataRow dr in MarketingLevelDT.Rows)
+            {
+                if (dr["LevelID"].ToString() != "ALLOCATION" && dr["LevelID"].ToString() == levelID)
+                {
+                    var lvl = dr["LevelID"].ToString();
+                    var ba =  dr["Business Area"].ToString();
+                    var brd = dr["Brand"].ToString();
+                    mktgDT.Rows.Add(ba, lvl,brd, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }
+            }
+
+            foreach (DataRow dr in mktgDT.Rows)
+            {
+                var lvl = dr["LevelID"].ToString();
+                var ba = dr["Business Area"].ToString();
+                var brd = dr["Brand"].ToString();
+                foreach (string s in calPeriods)
+                {
+                    if (mktgRecs.Length > 0)
+                    {
+                        DataTable mktgRecsDt = mktgRecs.CopyToDataTable();
+                        var record = mktgRecsDt.Select("Calendar_YYYYMM = '" + s + "' AND [Business Area] = '" + ba + "' AND [LevelID] = '" + lvl + "' AND Brand = '" + brd + "'");
+
+                        if (record.Length == 1)
+                        {
+                            var pct = record[0];
+                            dr[s] = Convert.ToDouble(pct["Alloc Pct"]) * 100;
+                        }
+                    }
+
+                }
+            }
+            //Fill Totals List
+            List<decimal> totals = new List<decimal>();
+            for (int i = 3; i < 15; i++)
+            {
+                decimal total = 0;
+                foreach (DataRow dr in mktgDT.Rows)
+                {
+                    total += Convert.ToDecimal(dr[i]);
+                }
+                totals.Add(total);
+            }
+            //Fill Totals row
+            //Add Totals Row
+            mktgDT.Rows.Add("", "", "Total:", totals[0], totals[1], totals[2], totals[3], totals[4], totals[5], totals[6], totals[7], totals[8], totals[9], totals[10], totals[11]);
+
+            return mktgDT;
+        }
+        private void CreateAmortizationWorkTables()
+        {
+
+
+
+            EFF_AmortDS = new DataSet();
+
+            //Get Max Calendar Period list from EFF_Amortization
+            var periods = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Amortization"].AsEnumerable()
+                          orderby obs.Field<string>("Calendar_YYYYMM") descending
+                          select obs.Field<string>("Calendar_YYYYMM");
+
+
+
+            var maxCalPeriod = periods.Max<string>();
+
+            //Get Fiscal Year list from EFF_Amortization
+            var fiscalYears = from obs in AppController.DataController.EFF_CustomDS.Tables["EFF_Amortization"].AsEnumerable()
+                              orderby obs.Field<int>("FiscalYear") descending
+                              select obs.Field<int>("FiscalYear");
+
+            AmortFiscalYrsLst = fiscalYears.Distinct().ToList();
+            var maxYr = AmortFiscalYrsLst.Max();
+
+
+            //Add a few mor years to fiscalyears
+            for (int i = 1; i < 4; i++)
+            {
+                AmortFiscalYrsLst.Add(maxYr + i);
+            }
+
+            foreach (int s in AmortFiscalYrsLst)
+            {
+                // Get Calendar Periods
+                List<string> calPeriods = new List<string>();
+                for (int i = 0; i < 6; i++)
+                {
+                    var per = (s - 1).ToString() + "0" + (4 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = (s - 1).ToString() + (10 + i).ToString();
+                    calPeriods.Add(per);
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    var per = s.ToString() + "0" + (1 + i).ToString();
+                    calPeriods.Add(per);
+                }
+
+                var records = EFF_CustomDS.Tables["EFF_Amortization"].Select("FiscalYear = " + s.ToString());
+
+                var amortRes = CreateAmortizationWorkTable(s, calPeriods, records);
+                EFF_AmortDS.Tables.Add(amortRes);
+
+            }
+        }
+
+        private DataTable CreateAmortizationWorkTable(int fiscalYear, List<string> calPeriods, DataRow[] amortRecs)
+        {
+            DataTable amortDT = new DataTable();
+            amortDT.TableName = fiscalYear.ToString();
+
+            amortDT.Columns.Add("Business Area", typeof(string));
+            amortDT.Columns.Add("Brand", typeof(string));
+            amortDT.Columns.Add("GL Account", typeof(string));
+
+            foreach (string s in calPeriods)
+            {
+                amortDT.Columns.Add(s, typeof(double));
+            }
+
+            foreach (string s in AmortAcctLst)
+            {
+                foreach (DataRow dr in AmortBrandDT.Rows)
+                {                
+                    amortDT.Rows.Add(dr["Business Area"].ToString(), dr["Brand"].ToString(), s, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }                
+            }
+            foreach (DataRow dr in amortDT.Rows)
+            {
+                var brnd = dr["Brand"].ToString();
+                var acct = dr["GL Account"].ToString();
+                foreach (string s in calPeriods)
+                {
+                    if(s == "202006" )
+                    {
+
+                    }
+                    if (amortRecs.Length > 0)
+                    {
+                        DataTable amortRecsDt = amortRecs.CopyToDataTable();
+                        var record = amortRecsDt.Select("Calendar_YYYYMM = '" + s + "' AND [Brand Name] = '" + brnd + "' AND [GL Acct Desc] = '" + acct + "'");
+
+                        if (record.Length == 1)
+                        {
+                            var pct = record[0];
+                            dr[s] = Convert.ToDouble(pct["Amount"]);
+                        }
+                    }
+
+                }
+            }
+
+
+            return amortDT;
+        }
         public void CreateObsolescenceWorkTables()
         {
             EFF_ObsoMLKDS = new DataSet();
@@ -316,16 +823,19 @@ namespace Eagle_Finance_Utility
 
                 m3c.Command(sql.Update1(updateUser, updateDate, ppvPeriod, pKey));
 
-                EFF_CustomDS.Tables.Remove(EFF_PPV_Period);
-
-                EFF_PPV_Period = m3c.FillDataTable(sql.Select5());
-                EFF_PPV_Period.TableName = "EFF_PPV_Period";
-
-                EFF_CustomDS.Tables.Add(EFF_PPV_Period);
+               
 
             }
+            EFF_CustomDS.Tables.Remove(EFF_PPV_Period);
 
-     
+            EFF_PPV_Period = m3c.FillDataTable(sql.Select5());
+            EFF_PPV_Period.TableName = "EFF_PPV_Period";
+
+            EFF_CustomDS.Tables.Add(EFF_PPV_Period);
+            CreatePPVTimePeriodWorkTable();
+
+
+
         }
         public void UpdateIPVAmountTable()
         {
@@ -365,7 +875,7 @@ namespace Eagle_Finance_Utility
         }
         public void InsertOrUpdateObsolAlloc(string YYYYMM, string Level3Name, string percent, string busArea, string level2Name)
         {
-            var res = EFF_CustomDS.Tables["EFF_Obsol_Alloc"].Select("Calendar_YYYYMM = '" + YYYYMM + "'");
+            var res = EFF_CustomDS.Tables["EFF_Obsol_Alloc"].Select("Calendar_YYYYMM = '" + YYYYMM + "' and [Level 3] = '" + Level3Name + "'");
 
             if(res.Length > 0)
             {
@@ -375,7 +885,118 @@ namespace Eagle_Finance_Utility
             {
                 InsertObsolAlloc(YYYYMM, Level3Name, percent, busArea, level2Name);
             }
+
+
+
         }
+
+        private void InsertMarketingAlloc(string YYYYMM, string brand, string percent, string busArea, string levelID)
+        {
+            var res = ExpenseLevelDT.Select("LevelID = '" + levelID + "'");
+            var levelKey = res[0]["LevelKey"].ToString();
+            var user = Environment.UserName;
+            m3c.Command(sql.Insert9(user, YYYYMM, brand,levelKey, busArea, percent));
+        }
+
+        private void UpdateMarketingAlloc(string YYYYMM, string brand, string percent, string busArea, string levelID)
+        {
+            var res = ExpenseLevelDT.Select("LevelID = '" + levelID + "'");
+            var levelKey = res[0]["LevelKey"].ToString();
+            var user = Environment.UserName;
+            m3c.Command(sql.Update6(user, YYYYMM, brand, levelKey, busArea, percent));
+        }
+        public void InsertOrUpdateMktgAlloc(string YYYYMM, string brand, string percent, string busArea, string levelID)
+        {
+            var res = EFF_CustomDS.Tables["EFF_Mktg_Exp_Alloc"].Select("Calendar_YYYYMM = '" + YYYYMM + "' and [LevelID] = '" + levelID + "' AND Brand ='" + brand + "'");
+
+            if (res.Length > 0)
+            {
+                 UpdateMarketingAlloc(YYYYMM,brand,percent,busArea,levelID);
+            }
+            else
+            {
+                InsertMarketingAlloc(YYYYMM, brand, percent, busArea, levelID);
+            }
+
+
+
+        }
+        private void InsertExpenseAlloc(string YYYYMM, string LevelID, string percent, string busArea)
+        {
+            var res = ExpenseLevelDT.Select("LevelID = '" + LevelID + "'");
+            var levelKey = res[0]["LevelKey"].ToString();
+            var user = Environment.UserName;
+            m3c.Command(sql.Insert7(user, YYYYMM, levelKey, busArea, percent));
+
+        }
+        private void UpdateExpenseAlloc(string expKey, string percent)
+        {
+            var user = Environment.UserName;
+            var date = DateTime.Now.ToString();
+            m3c.Command(sql.Update5(expKey,user, percent));
+        }
+        public void InsertOrUpdateExpenseAlloc(string YYYYMM, string LevelID, string percent, string busArea)
+        {
+            var res = EFF_CustomDS.Tables["EFF_Expense_Alloc"].Select("Calendar_YYYYMM = '" + YYYYMM + "' AND LevelID = '" + LevelID + "'");
+
+            if (res.Length > 0)
+            {
+                var expKey = res[0]["CorpExpKey"].ToString();
+                UpdateExpenseAlloc(expKey, percent);
+            }
+            else
+            {
+                InsertExpenseAlloc(YYYYMM, LevelID, percent, busArea);
+            }
+
+
+
+        }
+        private void InsertAmortAmount(string yyyymm, string brand, string busArea, string account, string amount)
+        {
+            var user = Environment.UserName;
+            m3c.Command(sql.Insert6(user, yyyymm, brand, busArea, account, amount));
+        }
+
+        public void InsertOneTimeMapping(string fiscalYear, string expLevelKey, string costCtr)
+        {
+            var user = Environment.UserName;
+            m3c.Command(sql.Insert8(fiscalYear,expLevelKey,costCtr,user));
+            RefreshOneTimeExpenseMapData();
+
+        }
+        private void UpdateAmortAmount(string amortKey, string amount)
+        {
+            var user = Environment.UserName;
+            m3c.Command(sql.Update4(amortKey,amount,user));
+        }
+
+        public void InsertOrUpdateAmortAmount(DataTable dt)
+        {
+            foreach (DataRow dr in dt.Rows)
+            {
+                var yyyymm = dr["YYYYMM"].ToString();
+                var ba = dr["BusArea"].ToString();
+                var brand = dr["Brand"].ToString();
+                var acct = dr["AcctDesc"].ToString().Substring(0, 6);
+                var amount = dr["Amount"].ToString();
+
+                var res = EFF_CustomDS.Tables["EFF_Amortization"].Select("Calendar_YYYYMM = '" + yyyymm + "' AND [Brand Name] = '" + brand + "' AND [GL Account] = '" + acct + "'");
+                if (res.Length == 1)
+                {
+                    var key = res[0]["AmortizationKey"].ToString();
+                    UpdateAmortAmount(key, amount);
+                }
+                else
+                {
+                    InsertAmortAmount(yyyymm, brand, ba, acct, amount);
+                }
+
+                RefreshAmortizartionAllocData();
+            }
+           
+        }
+
         public void SetCurrentFiscalYear()
         {
             var date = DateTime.Now;
@@ -397,7 +1018,7 @@ namespace Eagle_Finance_Utility
             var month = DateTime.Now.Month.ToString();
             var year = DateTime.Now.Year.ToString();
 
-            if (DateTime.Now.Day <= 7)
+            if (DateTime.Now.Day <= 10)
             {
                 month = DateTime.Now.AddMonths(-1).Month.ToString();
                 year = DateTime.Now.AddMonths(-1).Year.ToString();

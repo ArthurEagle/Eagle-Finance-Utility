@@ -110,5 +110,14 @@ namespace Eagle_Finance_Utility
                 this.Hide();
             }
         }
+
+        private void FrmSpalsh_Load(object sender, EventArgs e)
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+
+            lblVersion.Text = "App Version: " + version;
+        }
     }
 }

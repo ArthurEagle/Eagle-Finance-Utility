@@ -76,9 +76,10 @@ namespace Eagle_Finance_Utility
             foreach (DataGridViewRow r in dgvPPVTimePeriod.Rows)
             {
                 var sPeriod = Convert.ToInt32(r.Cells["Sales Period YYYYMM"].Value);
-                if (sPeriod <= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
+                if (sPeriod < Convert.ToInt32(AppController.DataController.CloseYYYYMM))
                 {
                     r.ReadOnly = true;
+                    r.Cells["Previous Deferment"].Style.BackColor = Color.Gainsboro;
                 }
             }
         }

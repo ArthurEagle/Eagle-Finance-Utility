@@ -10,67 +10,26 @@ using System.Windows.Forms;
 
 namespace Eagle_Finance_Utility
 {
-    public partial class FrmObsolAlloc : Form
+    public partial class FrmMarketing : Form
     {
-  
-        public FrmObsolAlloc()
+        public FrmMarketing()
         {
             InitializeComponent();
-
-
-
-            //cbxFiscalYear.DataSource = AppController.DataController.ObsoFiscalYrsLst.OrderBy(p => p).ToList();
-            //cbxFiscalYear.SelectedItem = Convert.ToInt32(AppController.DataController.CurrentFiscalYear);
-
         }
-
         public FrmMainMenu frmMM;
-
-   
         Dictionary<string, bool> MlkColCheck;
-        Dictionary<string, bool> SnkColCheck;
-   
-        private void cbxFiscalYear_SelectedIndexChanged(object sender, EventArgs e)
+        Dictionary<string, bool> CFColCheck;
+        Dictionary<string, bool> PIColCheck;
+        private void SetLastUpdateLabelAfterUpdate()
         {
-            MilkObsoBS.DataSource = AppController.DataController.EFF_ObsoMLKDS.Tables[cbxFiscalYear.SelectedItem.ToString()];
-            dgvObsoAllocMLK.DataSource = MilkObsoBS;
-
-         
-
-            SnackObsoBS.DataSource = AppController.DataController.EFF_ObsoSNKDS.Tables[cbxFiscalYear.SelectedItem.ToString()];
-            dgvObsoAllocSnk.DataSource = SnackObsoBS;
-
-            
-
-
-
-            SetPriorPeriodsReadonly(dgvObsoAllocMLK, MlkColCheck);
-            SetPriorPeriodsReadonly(dgvObsoAllocSnk, SnkColCheck);
-
-            SetNoSalesPeriodReadOnly(dgvObsoAllocMLK);
-            SetNoSalesPeriodReadOnly(dgvObsoAllocSnk);
-
-            SetTotalRowReadOnly(dgvObsoAllocMLK);
-            SetTotalRowReadOnly(dgvObsoAllocSnk);
-
+            lblUpdate.Text = Environment.UserName + " " + DateTime.Now.ToString();
         }
-        private void SetTotalRowReadOnly(DataGridView dgv)
-        {
-            foreach (DataGridViewRow r in dgv.Rows)
-            {
-                if (r.Cells["Item Level 3"].Value.ToString() == "Total:")
-                {
-                    r.ReadOnly = true;
-                }
-            }
-        }
-
         private void SetPriorPeriodsReadonly(DataGridView dgv, Dictionary<string, bool> ColCheck)
         {
-            
+
             foreach (DataGridViewColumn c in dgv.Columns)
             {
-                if(c.Index > 2)
+                if (c.Index > 2)
                 {
                     var sPeriod = Convert.ToInt32(c.HeaderText);
                     if (sPeriod < Convert.ToInt32(AppController.DataController.CloseYYYYMM))
@@ -80,15 +39,15 @@ namespace Eagle_Finance_Utility
                     }
                     else
                     {
-                        if(!ColCheck.ContainsKey(c.HeaderText))
+                        if (!ColCheck.ContainsKey(c.HeaderText))
                         {
                             ColCheck.Add(c.HeaderText, false);
                         }
-                        else if(ColCheck[c.HeaderText])
+                        else if (ColCheck[c.HeaderText])
                         {
                             foreach (DataGridViewRow row in dgv.Rows)
                             {
-                                if (row.Cells["Item Level 3"].Value.ToString() == "Total:")
+                                if (row.Cells["Brand"].Value.ToString() == "Total:")
                                 {
                                     row.Cells[c.Index].Style.BackColor = Color.LightGreen;
                                 }
@@ -99,53 +58,62 @@ namespace Eagle_Finance_Utility
                 else
                 {
                     c.ReadOnly = true;
-                }               
+                }
             }
         }
 
+        private void SetTotalRowReadOnly(DataGridView dgv)
+        {
+            foreach(DataGridViewRow r in dgv.Rows)
+            {
+                if (r.Cells["Brand"].Value.ToString() == "Total:")
+                {
+                    r.ReadOnly = true;
+                }
+            }
+        }
         private void SetNoSalesPeriodReadOnly(DataGridView dgv)
         {
             if (cbxFiscalYear.SelectedItem.ToString() == AppController.DataController.CurrentFiscalYear)
             {
 
-                var noSalesPeriods = AppController.DataController.EFF_CustomDS.Tables["EFF_Item_Hierarchy"].Select("[Has Sales] = 0");
+                var noSalesPeriods = AppController.DataController.AmortBrandDT.Select("[Has Sales] = 0");
 
-                if(noSalesPeriods.Length > 0)
+                if (noSalesPeriods.Length > 0)
                 {
                     foreach (DataGridViewColumn c in dgv.Columns)
                     {
                         if (c.HeaderText == AppController.DataController.CloseYYYYMM)
                         {
-                            foreach(DataRow dr in noSalesPeriods)
+                            foreach (DataRow dr in noSalesPeriods)
                             {
                                 foreach (DataGridViewRow r in dgv.Rows)
                                 {
-                                    
-                                    if (r.Cells["Item Level 3"].Value.ToString() == dr["Lvl3 Name"].ToString())
+
+                                    if (r.Cells["Brand"].Value.ToString().Trim() == dr["Brand"].ToString().Trim())
                                     {
                                         r.Cells[c.Index].ReadOnly = true;
                                         r.Cells[c.Index].Style.BackColor = Color.Gainsboro;
                                     }
                                 }
                             }
-                          
+
                         }
                     }
                 }
-                
-            }
-           
-        }
 
+            }
+
+        }
         private void SumColumnTotal(int colIndex, DataGridView dgv, Dictionary<string, bool> ColCheck)
         {
             //This will only be valid for non-read only cells. Some historical data values sum > 100 as of the time writing this.
             // Valid for Close period and greater YYYYMM
             double total = 0;
-           
+
             foreach (DataGridViewRow row in dgv.Rows)
-            {                
-                if(row.Cells["Item Level 3"].Value.ToString() != "Total:")
+            {
+                if (row.Cells["Brand"].Value.ToString() != "Total:")
                 {
                     double val = 0;
                     if (Double.TryParse(row.Cells[colIndex].Value.ToString(), out val) && row.Cells[colIndex].ReadOnly == false)
@@ -160,14 +128,14 @@ namespace Eagle_Finance_Utility
             }
             foreach (DataGridViewRow row in dgv.Rows)
             {
-                if (row.Cells["Item Level 3"].Value.ToString() == "Total:")
+                if (row.Cells["Brand"].Value.ToString() == "Total:")
                 {
                     row.Cells[colIndex].Value = total;
-                    if(total != 100)
+                    if (total != 100)
                     {
                         row.Cells[colIndex].Style.BackColor = Color.Orange;
                         ColCheck[dgv.Columns[colIndex].HeaderText] = false;
-                       
+
                     }
                     else
                     {
@@ -178,15 +146,16 @@ namespace Eagle_Finance_Utility
             }
 
         }
+
         private void SumAllColumns(DataGridView dgv, Dictionary<string, bool> ColCheck)
         {
-            for (int i = 3; i < 15; i++)
+            for(int i = 3; i <15;i++)
             {
-                if (Convert.ToInt32(dgv.Columns[i].HeaderText) >= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
+                if(Convert.ToInt32(dgv.Columns[i].HeaderText) >= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
                 {
                     SumColumnTotal(i, dgv, ColCheck);
                 }
-
+            
             }
         }
         private void CheckColumnTotalAndUpdate(DataGridView dgv, Dictionary<string, bool> ColCheck)
@@ -197,29 +166,30 @@ namespace Eagle_Finance_Utility
                 if (kvp.Value)
                 {
                     cnt++;
-                    UpdateObsolAllocByPeriod(dgv, kvp.Key);
-                }              
+                    UpdateMktgAllocByPeriod(dgv, kvp.Key);
+                }
 
             }
-            if(cnt > 0)
+            if (cnt > 0)
             {
-                AppController.DataController.RefreshObsolescenceAllocData();
+                AppController.DataController.RefreshMarketingExpenseAllocData();
+                SetLastUpdateLabelAfterUpdate();
             }
         }
-        private void UpdateObsolAllocByPeriod(DataGridView dgv,string YYYYMM)
+        private void UpdateMktgAllocByPeriod(DataGridView dgv, string YYYYMM)
         {
             foreach (DataGridViewRow row in dgv.Rows)
             {
-                if (row.Cells["Item Level 3"].Value.ToString() != "Total:")
-                {   
-                     if (Convert.ToInt32(YYYYMM) >= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
-                     {
-                        if (dgv.Columns.Contains(YYYYMM))
+                if (row.Cells["Brand"].Value.ToString() != "Total:")
+                {
+                    if (Convert.ToInt32(YYYYMM) >= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
+                    {
+                        if(dgv.Columns.Contains(YYYYMM))
                         {
                             if (Convert.ToDouble(row.Cells[YYYYMM].Value) > 0)
                             {
-                                var lvl3Name = row.Cells["Item Level 3"].Value.ToString();
-                                var lvl2Name = row.Cells["Item Level 2"].Value.ToString();
+                                var brd = row.Cells["Brand"].Value.ToString();
+                                var lvl = row.Cells["LevelID"].Value.ToString();
                                 var busArea = row.Cells["Business Area"].Value.ToString();
                                 if (busArea == "MILK" || busArea == "MLK")
                                 {
@@ -230,57 +200,16 @@ namespace Eagle_Finance_Utility
                                     busArea = "SNK";
                                 }
                                 var percent = (Convert.ToDouble(row.Cells[YYYYMM].Value) / 100.00).ToString();
-                                AppController.DataController.InsertOrUpdateObsolAlloc(YYYYMM, lvl3Name, percent, busArea, lvl2Name);
+                                AppController.DataController.InsertOrUpdateMktgAlloc(YYYYMM, brd, percent, busArea, lvl);
                             }
-                        }
-                     }             
-
-                }
-            }
-        }
-        private bool CheckColumnTotals(Dictionary<string,bool> ColCheck)
-        {
-            int cnt = 0;
-            foreach (KeyValuePair<string, bool> kvp in ColCheck)
-            {
-                if (!kvp.Value)
-                {
-                    cnt++;
-                }
-            }
-            if(cnt == 0)
-            {
-                return true;
-            }
-            else
-            {               
-                return false;
-            }
-        }
-        private void UpdateObsoAlloc(DataGridView dgv, Dictionary<string, bool> ColCheck)
-        {
-            foreach (DataGridViewRow row in dgv.Rows)
-            {
-                if (row.Cells["Item Level 3"].Value.ToString() != "Total:")
-                {
-                    foreach(KeyValuePair<string, bool> kvp in ColCheck)
-                    {
-                        var yyyymm = dgv.Columns[kvp.Key].HeaderText;
-                        if (Convert.ToInt32(yyyymm) >= Convert.ToInt32(AppController.DataController.CloseYYYYMM))
-                        {
-                            var lvl3Name = row.Cells["Item Level 3"].Value.ToString();
-                            var lvl2Name = row.Cells["Item Level 2"].Value.ToString();
-                            var busArea = row.Cells["Business Area"].Value.ToString();
-                            var percent = (Convert.ToDouble(row.Cells[kvp.Key].Value) / 100.00).ToString();
-                            AppController.DataController.InsertOrUpdateObsolAlloc(yyyymm, lvl3Name, percent,busArea,lvl2Name);
-                           
-                        }
+                        }                       
 
                     }
 
                 }
             }
         }
+
         private void CopyClipboard(DataGridView dgv)
         {
             DataObject d = dgv.GetClipboardContent();
@@ -311,7 +240,7 @@ namespace Eagle_Finance_Utility
                                     {
                                         oCell.Value = Convert.ChangeType(sCells[i],
                                                               oCell.ValueType);
-
+                                   
                                     }
                                     else
                                         iFail++;
@@ -337,96 +266,151 @@ namespace Eagle_Finance_Utility
                 return;
             }
         }
-        private void SetLastUpdateLabelAfterUpdate()
+        private void FrmMarketing_Load(object sender, EventArgs e)
         {
-            lblUpdate.Text = Environment.UserName + " " + DateTime.Now.ToString();
-        }
-        private void dgvObsoAllocMLK_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            MessageBox.Show("Please enter Allcoation percent as a decimal number. Ex. enter 25.5 for 25.5%.");
+           
         }
 
-        private void dgvObsoAllocSnk_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void cbxFiscalYear_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Please enter Allcoation percent as a decimal number. Ex. enter 25.5 for 25.5%.");
+
+            MktgMlkBS.DataSource = AppController.DataController.EFF_MktgDS.Tables[cbxFiscalYear.SelectedItem.ToString() + " MLK"];
+            dgvMktgAllocMLK.DataSource = MktgMlkBS;
+
+            MktgCFBS.DataSource = AppController.DataController.EFF_MktgDS.Tables[cbxFiscalYear.SelectedItem.ToString() + " CORNFIELDS"];
+            dgvMktgAllocCF.DataSource = MktgCFBS;
+
+            MktgPIBS.DataSource = AppController.DataController.EFF_MktgDS.Tables[cbxFiscalYear.SelectedItem.ToString() + " POPCORN INDIANA"];
+            dgvMktgAllocPI.DataSource = MktgPIBS;
+
+            SetPriorPeriodsReadonly(dgvMktgAllocCF, CFColCheck);
+            SetPriorPeriodsReadonly(dgvMktgAllocPI, PIColCheck);
+            SetPriorPeriodsReadonly(dgvMktgAllocMLK, MlkColCheck);
+
+            SetNoSalesPeriodReadOnly(dgvMktgAllocMLK);
+            SetNoSalesPeriodReadOnly(dgvMktgAllocCF);
+            SetNoSalesPeriodReadOnly(dgvMktgAllocPI);
+
+            SetTotalRowReadOnly(dgvMktgAllocMLK);
+            SetTotalRowReadOnly(dgvMktgAllocCF);
+            SetTotalRowReadOnly(dgvMktgAllocPI);
+
         }
 
-        private void dgvObsoAllocMLK_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void dgvMktgAllocMLK_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             double pct;
-            if (double.TryParse(dgvObsoAllocMLK.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out pct))
+            if (double.TryParse(dgvMktgAllocMLK.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out pct))
             {
                 if (pct < 0)
                 {
                     MessageBox.Show("Percents must be non-negative.");
-                    dgvObsoAllocMLK.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "0";
+                    dgvMktgAllocMLK.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "0";
                 }
-                SumColumnTotal(e.ColumnIndex, dgvObsoAllocMLK, MlkColCheck);
+                SumColumnTotal(e.ColumnIndex, dgvMktgAllocMLK, MlkColCheck);
             }
-          
         }
 
-        private void dgvObsoAllocSnk_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void dgvMktgAllocCF_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             double pct;
-            if(double.TryParse(dgvObsoAllocSnk.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out pct))
+            if (double.TryParse(dgvMktgAllocCF.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out pct))
             {
-                if(pct < 0)
+                if (pct < 0)
                 {
                     MessageBox.Show("Percents must be non-negative.");
-                    dgvObsoAllocSnk.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "0";
+                    dgvMktgAllocCF.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "0";
                 }
-                SumColumnTotal(e.ColumnIndex, dgvObsoAllocSnk, SnkColCheck);
+                SumColumnTotal(e.ColumnIndex, dgvMktgAllocCF, CFColCheck);
             }
-   
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {           
-                CheckColumnTotalAndUpdate(dgvObsoAllocMLK, MlkColCheck);
-                SetLastUpdateLabelAfterUpdate();
-
-                CheckColumnTotalAndUpdate(dgvObsoAllocSnk, SnkColCheck);
-                SetLastUpdateLabelAfterUpdate();       
-            
+        private void dgvMktgAllocPI_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            double pct;
+            if (double.TryParse(dgvMktgAllocPI.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out pct))
+            {
+                if (pct < 0)
+                {
+                    MessageBox.Show("Percents must be non-negative.");
+                    dgvMktgAllocPI.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "0";
+                }
+                SumColumnTotal(e.ColumnIndex, dgvMktgAllocPI, PIColCheck);
+            }
         }
 
-        private void FrmObsolAlloc_FormClosing(object sender, FormClosingEventArgs e)
+        private void dgvMktgAllocMLK_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Please enter Allcoation percent as a decimal number. Ex. enter 25.5 for 25.5%.");
+        }
+
+        private void dgvMktgAllocCF_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Please enter Allcoation percent as a decimal number. Ex. enter 25.5 for 25.5%.");
+        }
+
+        private void dgvMktgAllocPI_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Please enter Allcoation percent as a decimal number. Ex. enter 25.5 for 25.5%.");
+        }
+
+        private void FrmMarketing_FormClosing(object sender, FormClosingEventArgs e)
         {
             frmMM.Show();
         }
 
-        private void FrmObsolAlloc_Load(object sender, EventArgs e)
+        private void FrmMarketing_Load_1(object sender, EventArgs e)
         {
             MlkColCheck = new Dictionary<string, bool>();
-            SnkColCheck = new Dictionary<string, bool>();
+            PIColCheck = new Dictionary<string, bool>();
+            CFColCheck = new Dictionary<string, bool>();
 
-            cbxFiscalYear.DataSource = AppController.DataController.ObsoFiscalYrsLst.OrderBy(p => p).ToList();
+
+            cbxFiscalYear.DataSource = AppController.DataController.MktgFiscalYrsLst.OrderBy(p => p).ToList();
             cbxFiscalYear.SelectedItem = Convert.ToInt32(AppController.DataController.CurrentFiscalYear);
 
+
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            CheckColumnTotalAndUpdate(dgvMktgAllocMLK, MlkColCheck);           
+
+            CheckColumnTotalAndUpdate(dgvMktgAllocCF, CFColCheck);        
+
+            CheckColumnTotalAndUpdate(dgvMktgAllocPI, PIColCheck);
           
         }
 
-        private void siMLKCopy_Click(object sender, EventArgs e)
+        private void miPaste_Click(object sender, EventArgs e)
         {
-            CopyClipboard(dgvObsoAllocMLK);
+            PasteClipboard(dgvMktgAllocMLK);
+            SumAllColumns(dgvMktgAllocMLK, MlkColCheck);
         }
 
-        private void siMLKPaste_Click(object sender, EventArgs e)
+        private void miCopy_Click(object sender, EventArgs e)
         {
-            PasteClipboard(dgvObsoAllocMLK);
-            SumAllColumns(dgvObsoAllocMLK, MlkColCheck);
+            CopyClipboard(dgvMktgAllocMLK);
         }
 
-        private void siSNKCopy_Click(object sender, EventArgs e)
+        private void miCFCopy_Click(object sender, EventArgs e)
         {
-            CopyClipboard(dgvObsoAllocSnk);
+            CopyClipboard(dgvMktgAllocCF);
         }
 
-        private void siSNKPaste_Click(object sender, EventArgs e)
+        private void miCFPaste_Click(object sender, EventArgs e)
         {
-            PasteClipboard(dgvObsoAllocSnk);
-            SumAllColumns(dgvObsoAllocSnk, SnkColCheck);
+            PasteClipboard(dgvMktgAllocCF);
+        }
+
+        private void miPICopy_Click(object sender, EventArgs e)
+        {
+            CopyClipboard(dgvMktgAllocPI);
+        }
+
+        private void miPIPaste_Click(object sender, EventArgs e)
+        {
+            PasteClipboard(dgvMktgAllocPI);
         }
     }
 }

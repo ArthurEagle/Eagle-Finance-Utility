@@ -60,5 +60,34 @@ namespace Eagle_Finance_Utility
         {
             Application.Exit();
         }
+
+        private void btnAmortization_Click(object sender, EventArgs e)
+        {
+            FrmAmortization frmAmort = new FrmAmortization();
+            frmAmort.frmMM = this;
+            frmAmort.Show();
+            this.Hide();
+        }
+
+        private void btnExpense_Click(object sender, EventArgs e)
+        {
+            FrmExpense frmExp = new FrmExpense();
+            frmExp.frmMM = this;
+            frmExp.Show();
+            this.Hide();
+        }
+
+        private void btnMktgAlloc_Click(object sender, EventArgs e)
+        {
+            FrmMarketing frmMK = new FrmMarketing();
+            frmMK.frmMM = this;
+            frmMK.Show();
+            this.Hide();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(AppController.DataController.howToLnk);
+        }
     }
 }

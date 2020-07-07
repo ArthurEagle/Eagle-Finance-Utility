@@ -11,11 +11,13 @@ namespace Eagle_Finance_Utility
         public static void InitializeApp()
         {
             // Add intializaltion Code
-            DataController.LoadRawMaterialItemsAndAccounts();
-            DataController.LoadIPV_PPV_ObsoWithPrimaryData();
             DataController.SetCurrentFiscalYear();
             DataController.SetCurrentCloseDateYYYYMM();
-            DataController.CreateObsolescenceWorkTables();
+            DataController.LoadRawMaterialItemsAndAccounts();
+            DataController.LoadIPV_PPV_ObsoWithPrimaryData();
+           
+           
+          
         }
         private static DataController dataController;
 
