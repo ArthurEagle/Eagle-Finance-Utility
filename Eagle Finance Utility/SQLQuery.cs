@@ -39,7 +39,7 @@ namespace Eagle_Finance_Utility
                 "IIF(CAST(RIGHT(Calendar_YYYYMM, 2) AS INT) >= 4, CAST(LEFT(Calendar_YYYYMM, 4) AS INT) + 1, CAST(LEFT(Calendar_YYYYMM, 4) AS INT)) FiscalYear FROM EFF_Obsolescence_Allocation";
             return sql;
         }
-        public string Select7()
+        public string Select7(string currentCloseYYYYMM)
         {
             string sql = "SELECT i.MMHIE3[Level3ID],i.[Lvl3 Name]  " +
                         " FROM dbo.Sales_Master " +
@@ -56,17 +56,17 @@ namespace Eagle_Finance_Utility
         }
         public string Select8(string currentCloseYYYYMM)
         {
-            string sql = "SELECT i.MMHIE1[Level1ID],RTRIM(i.[Lvl1 Name])[Lvl1 Name],i.MMHIE2[Level2ID],RTRIM(i.[Lvl2 Name])[Lvl2 Name],i.MMHIE3[Level3ID], RTRIM(i.[Lvl3 Name])[Lvl3 Name]" +
-                    " ,IIF(ISNULL(SUM(isnull([Invoiced Amount],0)),0) > 0,1,0) [Has Sales] " +
-                    " FROM dbo.EFF_ItemHierarchy i " +
-                    " LEFT JOIN dbo.Sales_Master ON [Product SKU] = [MMITNO] " +
-                    " AND [Data Version] = 'Actual' AND [Line Status] = 'Invoiced Completed' AND [Invoiced Amount] > 0 AND Calendar_YYYYMM = '" + currentCloseYYYYMM + "' " +
-                    " WHERE i.MMHIE2 IS NOT NULL " +
-                    " AND i.MMHIE3 IS NOT NULL " +
-                    " GROUP BY i.MMHIE1 , i.[Lvl1 Name], i.MMHIE2 , i.[Lvl2 Name], i.MMHIE3 , i.[Lvl3 Name]" +
-                    " ORDER BY i.MMHIE1 , i.[Lvl1 Name], i.MMHIE2 , i.[Lvl2 Name], i.MMHIE3 , i.[Lvl3 Name]  ";
-            //string sql = "SELECT Level1ID,       [Lvl1 Name],       Level2ID,       [Lvl2 Name],       Level3ID,       [Lvl3 Name],       [Has Sales] " +
-            //            "FROM dbo.EFF_ItemHierHasSalesClosePeriod";
+            //string sql = "SELECT i.MMHIE1[Level1ID],RTRIM(i.[Lvl1 Name])[Lvl1 Name],i.MMHIE2[Level2ID],RTRIM(i.[Lvl2 Name])[Lvl2 Name],i.MMHIE3[Level3ID], RTRIM(i.[Lvl3 Name])[Lvl3 Name]" +
+            //        " ,IIF(ISNULL(SUM(isnull([Invoiced Amount],0)),0) > 0,1,0) [Has Sales] " +
+            //        " FROM dbo.EFF_ItemHierarchy i " +
+            //        " LEFT JOIN dbo.Sales_Master ON [Product SKU] = [MMITNO] " +
+            //        " AND [Data Version] = 'Actual' AND [Line Status] = 'Invoiced Completed' AND [Invoiced Amount] > 0 AND Calendar_YYYYMM = '" + currentCloseYYYYMM + "' " +
+            //        " WHERE i.MMHIE2 IS NOT NULL " +
+            //        " AND i.MMHIE3 IS NOT NULL " +
+            //        " GROUP BY i.MMHIE1 , i.[Lvl1 Name], i.MMHIE2 , i.[Lvl2 Name], i.MMHIE3 , i.[Lvl3 Name]" +
+            //        " ORDER BY i.MMHIE1 , i.[Lvl1 Name], i.MMHIE2 , i.[Lvl2 Name], i.MMHIE3 , i.[Lvl3 Name]  ";
+            string sql = "SELECT Level1ID,       [Lvl1 Name],       Level2ID,       [Lvl2 Name],       Level3ID,       [Lvl3 Name],       [Has Sales] " +
+                        "FROM dbo.EFF_ItemHierHasSalesClosePeriod";
             return sql;
 
         }
@@ -79,17 +79,18 @@ namespace Eagle_Finance_Utility
         }
         public string Select10(string currentCloseYYYYMM)
         {
-            string sql = "SELECT [Business area], "+
-            " CASE when [User-defined field 3 - item name] = 'PRIVATE LABEL' then 'PRIVATE LABEL' ELSE[Product group name] END AS Brand, " +
-            " IIF(SUM(isnull([Invoiced Amount],0)) > 0,1,0) [Has Sales] " +
-            " FROM STD_BPW_PRD_Datamarts.dbo.Dim_Items LEFT JOIN dbo.Sales_Master ON [Product SKU] = [Item number] " +
-            " AND [Data Version] = 'Actual' AND [Line Status] = 'Invoiced Completed' AND [Invoiced Amount] > 0 AND Calendar_YYYYMM = '"+ currentCloseYYYYMM + "' " +
-            " WHERE [Item Group] like '10%' " +
-            " GROUP BY CASE WHEN [User-defined field 3 - item name] = 'PRIVATE LABEL' THEN 'PRIVATE LABEL' ELSE [Product group name]   END,    [Business area] " +
-            " UNION ALL " +
-            " SELECT 'MLK','MILK',1" +
-            " UNION ALL" +
-            " SELECT 'SNK','CORNFIELDS',1";
+            //string sql = "SELECT [Business area], "+
+            //" CASE when [User-defined field 3 - item name] = 'PRIVATE LABEL' then 'PRIVATE LABEL' ELSE[Product group name] END AS Brand, " +
+            //" IIF(SUM(isnull([Invoiced Amount],0)) > 0,1,0) [Has Sales] " +
+            //" FROM STD_BPW_PRD_Datamarts.dbo.Dim_Items LEFT JOIN dbo.Sales_Master ON [Product SKU] = [Item number] " +
+            //" AND [Data Version] = 'Actual' AND [Line Status] = 'Invoiced Completed' AND [Invoiced Amount] > 0 AND Calendar_YYYYMM = '"+ currentCloseYYYYMM + "' " +
+            //" WHERE [Item Group] like '10%' " +
+            //" GROUP BY CASE WHEN [User-defined field 3 - item name] = 'PRIVATE LABEL' THEN 'PRIVATE LABEL' ELSE [Product group name]   END,    [Business area] " +
+            //" UNION ALL " +
+            //" SELECT 'MLK','MILK',1" +
+            //" UNION ALL" +
+            //" SELECT 'SNK','CORNFIELDS',1";
+            string sql = "Select * FROM EFF_BrandHasSalesClosePeriod";
             return sql;
         }
         public string Select11()
@@ -149,6 +150,11 @@ namespace Eagle_Finance_Utility
                         " JOIN dbo.EFF_Expense_Allocation_Level "+
                         " ON LevelKey = ExpenseLevelKey "+
                         " ORDER BY ma.[Business Area], LevelID, ma.Brand";
+            return sql;
+        }
+        public string Select18()
+        {
+            string sql = "Select dbo.EFF_Get_ClosePeriod()";
             return sql;
         }
         public string Update1(string updateUser,string updateDate, string newPPVPeriod,string periodKey)

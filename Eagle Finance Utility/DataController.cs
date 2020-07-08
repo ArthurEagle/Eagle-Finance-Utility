@@ -20,7 +20,7 @@ namespace Eagle_Finance_Utility
         DataTable EFF_PPV_Account;
         DataTable EFF_PPV_Period;
         DataTable EFF_Obsol_Alloc;
-        DataTable EFF_LVL3_Sales;
+      //  DataTable EFF_LVL3_Sales;
         DataTable EFF_Item_Hierarchy;
         DataTable EFF_Amortization;
         DataTable EFF_Expense_Alloc;
@@ -36,7 +36,7 @@ namespace Eagle_Finance_Utility
 
         public DataTable PPVTime;
         public DataTable IPVAmount;
-        public DataTable AmortBrandDT;
+        public DataTable AmortBrandDT; 
         public DataTable AmortAccountDT;
         public DataTable ExpenseLevelDT;
         public DataTable MarketingLevelDT;
@@ -182,8 +182,8 @@ namespace Eagle_Finance_Utility
             EFF_Obsol_Alloc = m3c.FillDataTable(sql.Select6());
             EFF_Obsol_Alloc.TableName = "EFF_Obsol_Alloc";
 
-            EFF_LVL3_Sales = m3c.FillDataTable(sql.Select7());
-            EFF_LVL3_Sales.TableName = "EFF_LVL3_Sales";
+            //EFF_LVL3_Sales = m3c.FillDataTable(sql.Select7(CloseYYYYMM));
+            //EFF_LVL3_Sales.TableName = "EFF_LVL3_Sales";
 
             EFF_Item_Hierarchy = m3c.FillDataTable(sql.Select8(CloseYYYYMM));
             EFF_Item_Hierarchy.TableName = "EFF_Item_Hierarchy";
@@ -209,7 +209,7 @@ namespace Eagle_Finance_Utility
             EFF_CustomDS.Tables.Add(EFF_PPV_Account);
             EFF_CustomDS.Tables.Add(EFF_PPV_Period);
             EFF_CustomDS.Tables.Add(EFF_Obsol_Alloc);
-            EFF_CustomDS.Tables.Add(EFF_LVL3_Sales);
+            //EFF_CustomDS.Tables.Add(EFF_LVL3_Sales);
             EFF_CustomDS.Tables.Add(EFF_Item_Hierarchy);
             EFF_CustomDS.Tables.Add(EFF_Amortization);
             EFF_CustomDS.Tables.Add(EFF_Expense_Alloc);
@@ -1015,22 +1015,24 @@ namespace Eagle_Finance_Utility
        public void SetCurrentCloseDateYYYYMM()
        {
             CloseYYYYMM = "";
-            var month = DateTime.Now.Month.ToString();
-            var year = DateTime.Now.Year.ToString();
+            //var month = DateTime.Now.Month.ToString();
+            //var year = DateTime.Now.Year.ToString();
 
-            if (DateTime.Now.Day <= 10)
-            {
-                month = DateTime.Now.AddMonths(-1).Month.ToString();
-                year = DateTime.Now.AddMonths(-1).Year.ToString();
-            }
-           
+            //if (DateTime.Now.Day <= 10)
+            //{
+            //    month = DateTime.Now.AddMonths(-1).Month.ToString();
+            //    year = DateTime.Now.AddMonths(-1).Year.ToString();
+            //}
 
-            if (month.Length == 1)
-            {
-                month = "0" + month.ToString();
-            }
 
-            CloseYYYYMM = year + month;
+            //if (month.Length == 1)
+            //{
+            //    month = "0" + month.ToString();
+            //}
+
+            //CloseYYYYMM = year + month;
+
+            CloseYYYYMM = m3c.LineReader(sql.Select18());
         }
 
         public bool InsertNewPPVAccount(string account)
